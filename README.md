@@ -16,7 +16,9 @@ The media will be downloaded and placed in a directory called `MusicLibrary` whi
 3. Install requirements OR install local package through pip
 
 > pip3 install -r requirements.txt
-OR
+
+    OR 
+
 > pip3 install .
 
 4. You're all set.
