@@ -1,0 +1,4 @@
+requests
+pyDes 
+mutagen
+tqdm
