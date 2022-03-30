@@ -20,7 +20,7 @@ setup(
         'mutagen',
         'tqdm'
     ],
-    license='Mozilla Public License Version 2.0'
+    license='Mozilla Public License Version 2.0',
     classifiers=[
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent"
