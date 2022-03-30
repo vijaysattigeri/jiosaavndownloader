@@ -12,7 +12,7 @@ setup(
     description="Downloads high quality songs from JioSaavn",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    #url="<my github repo name>",
+    url="https://github.com/vijaysattigeri/jiosaavndownloader",
     packages=find_packages(),
     install_requires = [
         'requests',
