@@ -5,6 +5,7 @@ import requests
 import os
 import re
 import enum
+import ntpath
 import tqdm
 
 
@@ -17,9 +18,36 @@ class Downloader:
     def __init__(self, a_json_data, a_music_type):
         self.json_data = a_json_data
         self.music_type = a_music_type
+
+    def getLegalPathString(self, a_file_name):
+        # Define replacements here
+        # Format: "_char_<char_name>_"
+        substitutes = {
+            # Linux/Unix/Mac
+            "/"  : "_char_fslash_", 
+            "\\" : "_char_bslash_", 
+
+            # Windows
+            "<"  : "_char_lt_",
+            ">"  : "_char_gt_",
+            ":"  : "_char_colon_",
+            "\"" : "_char_dquote_",
+            "|"  : "_char_pipe_",
+            "?"  : "_char_question_",
+            "*"  : "_char_asterisk_"
+        }
+
+        for k, v in substitutes.items():
+            a_file_name = a_file_name.replace(k, v)
+
+        return a_file_name
     
-    def getUniqueFileName(self, a_file_name):
+    def getValidAndUniqueFileName(self, a_file_name):
+        title_str = ntpath.basename( a_file_name ) # 'ntpath' provides platform independent functionality
+        sanitized_title = self.getLegalPathString( title_str )
+        a_file_name = a_file_name.replace(title_str, sanitized_title)
         file_name, ext = os.path.splitext( a_file_name)
+
         counter = 2
         while os.path.exists(a_file_name):
             a_file_name = file_name + " (" + str(counter) + ")" + ext
@@ -65,7 +93,7 @@ class Downloader:
             img_file_name = os.path.join(output_dir, f'Cover.{imghdr.what(img_file_name_tmp)}')
             os.rename(img_file_name_tmp, img_file_name)
 
-            i = 1;
+            i = 1
             for song_obj in self.json_data["songs"]:
                 self.downloadAndAddMetadata(output_dir, song_obj, i, len(self.json_data["songs"]))
                 i = i + 1
@@ -80,7 +108,8 @@ class Downloader:
         audio_file = f'{track_prefix}. {song_obj["song"]}.m4a'
         audio_file = os.path.join(out_dir, audio_file)
         # Get unique name if the name already exists
-        audio_file = self.getUniqueFileName(audio_file)
+        audio_file = self.getValidAndUniqueFileName(audio_file)
+        print(f"Downloading file '{audio_file}' ...")
         if self.downloadWithProgress(audio_file, song_obj["media_url"]):
             print(f"File '{audio_file}' downloaded successfully")
         else:
@@ -128,7 +157,7 @@ class Downloader:
 
         m4a_metadata.save()
         audio_fh.close()
-        print(f"Added metadata to {audio_file}")
+        print(f"Added metadata to '{audio_file}'")
 
         # Cleanup
         os.remove(img_file_name)
