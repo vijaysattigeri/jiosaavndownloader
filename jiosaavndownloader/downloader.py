@@ -6,6 +6,7 @@ import os
 import re
 import enum
 import ntpath
+import errno
 import tqdm
 
 
@@ -15,11 +16,12 @@ class MusicType(enum.Enum):
    PLAYLIST = 3
 
 class Downloader:
-    def __init__(self, a_json_data, a_music_type):
+    def __init__(self, a_json_data, a_music_type, a_out_dir):
         self.json_data = a_json_data
         self.music_type = a_music_type
+        self.output_dir = a_out_dir
 
-    def getLegalPathString(self, a_file_name):
+    def getLegalPathString(self, a_path_str):
         # Define replacements here
         # Format: "_char_<char_name>_"
         substitutes = {
@@ -38,9 +40,9 @@ class Downloader:
         }
 
         for k, v in substitutes.items():
-            a_file_name = a_file_name.replace(k, v)
+            a_path_str = a_path_str.replace(k, v)
 
-        return a_file_name
+        return a_path_str
     
     def getValidAndUniqueFileName(self, a_file_name):
         title_str = ntpath.basename( a_file_name ) # 'ntpath' provides platform independent functionality
@@ -74,28 +76,25 @@ class Downloader:
 
 
     def downloadMusic(self):
-        output_dir = "MusicLibrary"
-
         if self.music_type == MusicType.SINGLE:
-            os.makedirs(output_dir, exist_ok=True)
-            self.downloadAndAddMetadata(output_dir, None, 1, 1)
+            self.downloadAndAddMetadata(self.output_dir, None, 1, 1)
         elif self.music_type == MusicType.ALBUM or self.music_type == MusicType.PLAYLIST:
-            output_dir = os.path.join(output_dir, f'{self.json_data["name"] if self.music_type == MusicType.ALBUM else self.json_data["listname"]} ({self.json_data["year"] if self.music_type == MusicType.ALBUM else "Playlist" })')
-            os.makedirs(output_dir, exist_ok=True)
+            out_sub_dir_pl_alb = os.path.join(self.output_dir, f'{self.getLegalPathString(self.json_data["name"]) if self.music_type == MusicType.ALBUM else self.json_data["listname"]} ({self.json_data["year"] if self.music_type == MusicType.ALBUM else "Playlist" })')
+            os.makedirs(out_sub_dir_pl_alb, exist_ok=True)
             
             # Download album cover art
             cover_img = requests.get( self.json_data["image"], stream=True )
-            img_file_name_tmp = os.path.join(output_dir, "tmp_albm_img.unknown")
+            img_file_name_tmp = os.path.join(out_sub_dir_pl_alb, "tmp_albm_img.unknown")
             img_fh = open(img_file_name_tmp, "wb")
             img_fh.write(cover_img.content)
             img_fh.close()
             # Detect actual extension
-            img_file_name = os.path.join(output_dir, f'Cover.{imghdr.what(img_file_name_tmp)}')
+            img_file_name = os.path.join(out_sub_dir_pl_alb, f'Cover.{imghdr.what(img_file_name_tmp)}')
             os.rename(img_file_name_tmp, img_file_name)
 
             i = 1
             for song_obj in self.json_data["songs"]:
-                self.downloadAndAddMetadata(output_dir, song_obj, i, len(self.json_data["songs"]))
+                self.downloadAndAddMetadata(out_sub_dir_pl_alb, song_obj, i, len(self.json_data["songs"]))
                 i = i + 1
 
     def downloadAndAddMetadata(self, out_dir, song_obj, tr_no, total_tr):

@@ -26,15 +26,17 @@ The media will be downloaded and placed in a directory called `MusicLibrary` whi
 ## Usage
 
     python jiosaavndownloader -h
-    usage: jiosaavndownloader [-h] [-u] [-f]
-    
+    usage: jiosaavndownloader [-h] [-u] [-f] [-o ]
+
     Downloads music from JioSaavn
-    
+
     optional arguments:
-      -h, --help    show this help message and exit
-      -u , --url    The URL of the song, album or playlist
-      -f , --file   The file containing options
-      
+        -h, --help            show this help message and exit
+        -u , --url            The URL of the song, album or playlist (default: None)
+        -f , --file           The file containing options (default: None)
+        -o [], --output_dir []
+                              The destination directory to store the downloaded media (default: MusicLibrary)
+
       -------------------------------------------------------------------------------------
       Ex:
       > python jiosaavndownloader -u https://www.jiosaavn.com/song/feel-nothing/GTATcjpKUGY
@@ -42,5 +44,3 @@ The media will be downloaded and placed in a directory called `MusicLibrary` whi
       
 ## License
 The project itself is licensed under **Mozilla Public License Version 2.0** and the API is licensed under **MIT**
-
-
