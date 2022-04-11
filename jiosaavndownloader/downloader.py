@@ -39,7 +39,7 @@ class Downloader:
                 self.downloadAlbumOrPlaylist(False)
             
             else: 
-                print("\nUnknown URL found! Exiting...!!!\n")
+                print("\nUnknown URL found! Exiting...!!!\n", flush=True)
                 sys.exit(1)
 
 
@@ -111,7 +111,7 @@ class Downloader:
                 fh.write(chunk_data)
         progress_bar.close()
         if total_size_in_bytes != 0 and progress_bar.n != total_size_in_bytes:
-            print(f"ERROR, something went wrong while downloading '{file_name}'")
+            print(f"ERROR, something went wrong while downloading '{file_name}'", flush=True)
             ret_val = False
 
         fh.close()
@@ -127,11 +127,11 @@ class Downloader:
 
         # Get unique name if the name already exists
         audio_file = self.getValidAndUniqueFileName(audio_file)
-        print(f"Downloading file '{audio_file}' ...")
+        print(f"Downloading file '{audio_file}' ...", flush=True)
         if self.downloadWithProgress(audio_file, song_obj["media_url"]):
-            print(f"File '{audio_file}' downloaded successfully")
+            print(f"File '{audio_file}' downloaded successfully", flush=True)
         else:
-            print(f"File '{audio_file}' could not be downloaded!")
+            print(f"File '{audio_file}' could not be downloaded!", flush=True)
 
         # Download song cover art
         cover_img = requests.get( song_obj["image"], stream=True )
@@ -150,7 +150,7 @@ class Downloader:
             
         else:
             img_file_name = img_file_name_tmp
-            print(f"Could not download Cover file! Adding album art to mp4 metadata will be skipped")
+            print(f"Could not download Cover file! Adding album art to mp4 metadata will be skipped", flush=True)
 
         audio_fh = open(audio_file, "rb+")
         m4a_metadata = mutagen.mp4.MP4(audio_file)
@@ -175,7 +175,7 @@ class Downloader:
 
         m4a_metadata.save()
         audio_fh.close()
-        print(f"Added metadata to '{audio_file}'")
+        print(f"Added metadata to '{audio_file}'", flush=True)
 
         # Cleanup
         os.remove(img_file_name)
