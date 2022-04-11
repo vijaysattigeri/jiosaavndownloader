@@ -3,23 +3,64 @@ import mutagen.mp4
 import imghdr
 import requests
 import os
+import sys
 import re
-import enum
 import ntpath
-import errno
 import tqdm
 
 
-class MusicType(enum.Enum):
-   SINGLE = 1
-   ALBUM = 2
-   PLAYLIST = 3
-
 class Downloader:
-    def __init__(self, a_json_data, a_music_type, a_out_dir):
-        self.json_data = a_json_data
-        self.music_type = a_music_type
+    def __init__(self, a_url_list, a_out_dir):
+        self.url_list = a_url_list
+        self.json_data = None
         self.output_dir = a_out_dir
+
+
+    def downloadMusic(self):
+        lyrics = True
+
+        for each_url in self.url_list:
+            each_url = each_url.rstrip()
+
+            if '/song/' in each_url:
+                song_id = jiosaavn.get_song_id( each_url )
+                self.json_data = jiosaavn.get_song( song_id,lyrics )
+                self.downloadAndAddMetadata( self.output_dir, self.json_data, 1, 1 )
+
+            elif '/album/' in each_url:
+                alb_id = jiosaavn.get_album_id( each_url )
+                self.json_data = jiosaavn.get_album( alb_id, lyrics )
+                self.downloadAlbumOrPlaylist(True)
+
+            
+            elif '/playlist/' or '/featured/' in each_url:
+                playlist_id = jiosaavn.get_playlist_id( each_url )
+                self.json_data = jiosaavn.get_playlist( playlist_id, lyrics )
+                self.downloadAlbumOrPlaylist(False)
+            
+            else: 
+                print("\nUnknown URL found! Exiting...!!!\n")
+                sys.exit(1)
+
+
+    def downloadAlbumOrPlaylist(self, a_is_album):
+        out_sub_dir_pl_alb = os.path.join(self.output_dir, f'{self.getLegalPathString(self.json_data["name"]) if a_is_album else self.json_data["listname"]} ({self.json_data["year"] if a_is_album else "Playlist" })')
+        os.makedirs(out_sub_dir_pl_alb, exist_ok=True)
+        
+        # Download album cover art
+        cover_img = requests.get( self.json_data["image"], stream=True )
+        img_file_name_tmp = os.path.join(out_sub_dir_pl_alb, "tmp_albm_img.unknown")
+        img_fh = open(img_file_name_tmp, "wb")
+        img_fh.write(cover_img.content)
+        img_fh.close()
+        # Detect actual extension
+        img_file_name = os.path.join(out_sub_dir_pl_alb, f'Cover.{imghdr.what(img_file_name_tmp)}')
+        os.rename(img_file_name_tmp, img_file_name)
+        i = 1
+        for song_obj in self.json_data["songs"]:
+            self.downloadAndAddMetadata(out_sub_dir_pl_alb, song_obj, i, len(self.json_data["songs"]))
+            i = i + 1
+
 
     def getLegalPathString(self, a_path_str):
         # Define replacements here
@@ -43,7 +84,8 @@ class Downloader:
             a_path_str = a_path_str.replace(k, v)
 
         return a_path_str
-    
+
+
     def getValidAndUniqueFileName(self, a_file_name):
         title_str = ntpath.basename( a_file_name ) # 'ntpath' provides platform independent functionality
         sanitized_title = self.getLegalPathString( title_str )
@@ -55,6 +97,7 @@ class Downloader:
             a_file_name = file_name + " (" + str(counter) + ")" + ext
             counter += 1
         return a_file_name 
+
 
     def downloadWithProgress(self, file_name, object_url):
         ret_val = True
@@ -75,37 +118,13 @@ class Downloader:
         return ret_val
 
 
-    def downloadMusic(self):
-        if self.music_type == MusicType.SINGLE:
-            self.downloadAndAddMetadata(self.output_dir, None, 1, 1)
-        elif self.music_type == MusicType.ALBUM or self.music_type == MusicType.PLAYLIST:
-            out_sub_dir_pl_alb = os.path.join(self.output_dir, f'{self.getLegalPathString(self.json_data["name"]) if self.music_type == MusicType.ALBUM else self.json_data["listname"]} ({self.json_data["year"] if self.music_type == MusicType.ALBUM else "Playlist" })')
-            os.makedirs(out_sub_dir_pl_alb, exist_ok=True)
-            
-            # Download album cover art
-            cover_img = requests.get( self.json_data["image"], stream=True )
-            img_file_name_tmp = os.path.join(out_sub_dir_pl_alb, "tmp_albm_img.unknown")
-            img_fh = open(img_file_name_tmp, "wb")
-            img_fh.write(cover_img.content)
-            img_fh.close()
-            # Detect actual extension
-            img_file_name = os.path.join(out_sub_dir_pl_alb, f'Cover.{imghdr.what(img_file_name_tmp)}')
-            os.rename(img_file_name_tmp, img_file_name)
-
-            i = 1
-            for song_obj in self.json_data["songs"]:
-                self.downloadAndAddMetadata(out_sub_dir_pl_alb, song_obj, i, len(self.json_data["songs"]))
-                i = i + 1
-
     def downloadAndAddMetadata(self, out_dir, song_obj, tr_no, total_tr):
-        if self.music_type == MusicType.SINGLE and song_obj == None:
-            song_obj = self.json_data
-
         # Download audio file
         max_str_len = len(str(total_tr))
         track_prefix = str(tr_no).zfill(max_str_len) if max_str_len > 1 else  str(tr_no).zfill(2)
         audio_file = f'{track_prefix}. {song_obj["song"]}.m4a'
         audio_file = os.path.join(out_dir, audio_file)
+
         # Get unique name if the name already exists
         audio_file = self.getValidAndUniqueFileName(audio_file)
         print(f"Downloading file '{audio_file}' ...")
@@ -162,37 +181,3 @@ class Downloader:
         os.remove(img_file_name)
 
 
-
-from traceback import print_exc
-
-def get_media_data(my_req):
-    lyrics = True
-    query = my_req
-
-    if 'saavn' not in query:
-        return jiosaavn.search_for_song(query,lyrics,True), 
-    try:
-        if '/song/' in query:
-            song_id = jiosaavn.get_song_id(query)
-            song = jiosaavn.get_song(song_id,lyrics)
-            return song, MusicType.SINGLE
-
-        elif '/album/' in query:
-            id = jiosaavn.get_album_id(query)
-            album = jiosaavn.get_album(id,lyrics)
-            #return songs
-            return album, MusicType.ALBUM
-
-        elif '/playlist/' or '/featured/' in query:
-            id = jiosaavn.get_playlist_id(query)
-            songs = jiosaavn.get_playlist(id,lyrics)
-            return songs, MusicType.PLAYLIST
-
-    except Exception as e:
-        print_exc()
-        error = {
-            "status": True,
-            "error":str(e)
-        }
-        return error
-    return None
