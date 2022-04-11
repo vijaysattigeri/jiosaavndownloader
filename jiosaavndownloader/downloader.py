@@ -33,7 +33,7 @@ class Downloader:
                 self.downloadAlbumOrPlaylist(True)
 
             
-            elif '/playlist/' or '/featured/' in each_url:
+            elif '/playlist/' in each_url or '/featured/' in each_url:
                 playlist_id = jiosaavn.get_playlist_id( each_url )
                 self.json_data = jiosaavn.get_playlist( playlist_id, lyrics )
                 self.downloadAlbumOrPlaylist(False)
