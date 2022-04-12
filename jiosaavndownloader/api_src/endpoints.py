@@ -3,3 +3,4 @@ song_details_base_url = "https://www.jiosaavn.com/api.php?__call=song.getDetails
 album_details_base_url = "https://www.jiosaavn.com/api.php?__call=content.getAlbumDetails&_format=json&cc=in&_marker=0%3F_marker%3D0&albumid="
 playlist_details_base_url = "https://www.jiosaavn.com/api.php?__call=playlist.getDetails&_format=json&cc=in&_marker=0%3F_marker%3D0&listid="
 lyrics_base_url = "https://www.jiosaavn.com/api.php?__call=lyrics.getLyrics&ctx=web6dot0&api_version=4&_format=json&_marker=0%3F_marker%3D0&lyrics_id="
+artist_url = "https://www.jiosaavn.com/api.php?__call=artist.getArtistPageDetails&cc=in&_marker=0%3F_marker%3D0&_format=json&artistId="

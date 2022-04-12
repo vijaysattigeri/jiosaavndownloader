@@ -33,10 +33,5 @@ if __name__ == '__main__':
     # Create output directory 
     createOutDir(args.output_dir)
     
-    for each_url in args.url:
-        each_url = each_url.rstrip()
-        #print(each_url)
-        song_data, music_type = downloader.get_media_data(each_url)
-        #print(song_data)
-        d_obj = downloader.Downloader(song_data, music_type, args.output_dir)
-        d_obj.downloadMusic()
+    d_obj = downloader.Downloader(args.url, args.output_dir)
+    d_obj.downloadMusic()
