@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='jiosaavndownloader',  
-    version='1.0.0',
+    version='1.1.0',
     author="Vijaymahantesh Sattigeri",
     author_email="vijaymahantesh016@gmail.com",
     description="Downloads high quality songs from JioSaavn",

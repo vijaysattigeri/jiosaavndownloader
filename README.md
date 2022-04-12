@@ -32,7 +32,7 @@ The media will be downloaded and placed in a directory called `MusicLibrary` whi
 
     optional arguments:
         -h, --help            show this help message and exit
-        -u , --url            The URL of the song, album or playlist (default: None)
+        -u , --url            The URL of the song, album, playlist or artist(default: None)
         -f , --file           The file containing options (default: None)
         -o [], --output_dir []
                               The destination directory to store the downloaded media (default: MusicLibrary)
