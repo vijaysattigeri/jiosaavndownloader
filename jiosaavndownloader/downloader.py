@@ -1,7 +1,10 @@
 from api_src import jiosaavn
+import artist
+
 import mutagen.mp4
 import imghdr
 import requests
+import time
 import os
 import sys
 import re
@@ -30,25 +33,43 @@ class Downloader:
             elif '/album/' in each_url:
                 alb_id = jiosaavn.get_album_id( each_url )
                 self.json_data = jiosaavn.get_album( alb_id, lyrics )
-                self.downloadAlbumOrPlaylist(True)
+                self.downloadAlbumOrPlaylist(self.output_dir, self.json_data, True)
 
-            
             elif '/playlist/' in each_url or '/featured/' in each_url:
                 playlist_id = jiosaavn.get_playlist_id( each_url )
                 self.json_data = jiosaavn.get_playlist( playlist_id, lyrics )
-                self.downloadAlbumOrPlaylist(False)
-            
+                self.downloadAlbumOrPlaylist(self.output_dir, self.json_data, False)
+
+            elif '/artist/' in each_url:
+                self.json_data = artist.get_artist_data( each_url, True )
+                artist_dir = os.path.join(self.output_dir, self.getLegalPathString( self.json_data["name"]) )
+
+                # Download Top Songs of artist
+                top_song_dir = os.path.join(artist_dir, "Top Songs")
+                os.makedirs(top_song_dir, exist_ok=True)
+                i = 1
+                for each_song in self.json_data['topSongs']['songs']:
+                    self.downloadAndAddMetadata( top_song_dir, each_song, i, len(self.json_data['topSongs']['songs']) )
+                    i = i + 1
+                    time.sleep(0.1) # To avoid ConnectionResetError(104, 'Connection reset by peer')
+                
+                # Download Top Albums of artist
+                top_album_dir = os.path.join(artist_dir, "Top Albums")
+                for each_album in self.json_data['topAlbums']['albums']:
+                    self.downloadAlbumOrPlaylist(top_album_dir, each_album, True)
+                    time.sleep(1) # To avoid ConnectionResetError(104, 'Connection reset by peer')
+
             else: 
                 print("\nUnknown URL found! Exiting...!!!\n", flush=True)
                 sys.exit(1)
 
 
-    def downloadAlbumOrPlaylist(self, a_is_album):
-        out_sub_dir_pl_alb = os.path.join(self.output_dir, f'{self.getLegalPathString(self.json_data["name"]) if a_is_album else self.json_data["listname"]} ({self.json_data["year"] if a_is_album else "Playlist" })')
+    def downloadAlbumOrPlaylist(self, a_alb_out_dir, a_alb_obj, a_is_album):
+        out_sub_dir_pl_alb = os.path.join(a_alb_out_dir, f'{self.getLegalPathString(a_alb_obj["name"]) if a_is_album else a_alb_obj["listname"]} ({a_alb_obj["year"] if a_is_album else "Playlist" })')
         os.makedirs(out_sub_dir_pl_alb, exist_ok=True)
         
         # Download album cover art
-        cover_img = requests.get( self.json_data["image"], stream=True )
+        cover_img = requests.get( a_alb_obj["image"], stream=True )
         img_file_name_tmp = os.path.join(out_sub_dir_pl_alb, "tmp_albm_img.unknown")
         img_fh = open(img_file_name_tmp, "wb")
         img_fh.write(cover_img.content)
@@ -57,8 +78,8 @@ class Downloader:
         img_file_name = os.path.join(out_sub_dir_pl_alb, f'Cover.{imghdr.what(img_file_name_tmp)}')
         os.rename(img_file_name_tmp, img_file_name)
         i = 1
-        for song_obj in self.json_data["songs"]:
-            self.downloadAndAddMetadata(out_sub_dir_pl_alb, song_obj, i, len(self.json_data["songs"]))
+        for song_obj in a_alb_obj["songs"]:
+            self.downloadAndAddMetadata(out_sub_dir_pl_alb, song_obj, i, len(a_alb_obj["songs"]))
             i = i + 1
 
 
