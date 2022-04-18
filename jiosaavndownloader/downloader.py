@@ -107,12 +107,8 @@ class Downloader:
         return a_path_str
 
 
-    def getValidAndUniqueFileName(self, a_file_name):
-        title_str = ntpath.basename( a_file_name ) # 'ntpath' provides platform independent functionality
-        sanitized_title = self.getLegalPathString( title_str )
-        a_file_name = a_file_name.replace(title_str, sanitized_title)
+    def getUniqueFileName(self, a_file_name):
         file_name, ext = os.path.splitext( a_file_name)
-
         counter = 2
         while os.path.exists(a_file_name):
             a_file_name = file_name + " (" + str(counter) + ")" + ext
@@ -144,10 +140,10 @@ class Downloader:
         max_str_len = len(str(total_tr))
         track_prefix = str(tr_no).zfill(max_str_len) if max_str_len > 1 else  str(tr_no).zfill(2)
         audio_file = f'{track_prefix}. {song_obj["song"]}.m4a'
-        audio_file = os.path.join(out_dir, audio_file)
+        audio_file = os.path.join(out_dir, self.getLegalPathString(audio_file) )
 
         # Get unique name if the name already exists
-        audio_file = self.getValidAndUniqueFileName(audio_file)
+        audio_file = self.getUniqueFileName(audio_file)
         print(f"Downloading file '{audio_file}' ...", flush=True)
         if self.downloadWithProgress(audio_file, song_obj["media_url"]):
             print(f"File '{audio_file}' downloaded successfully", flush=True)
