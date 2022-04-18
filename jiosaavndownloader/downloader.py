@@ -1,5 +1,5 @@
-from api_src import jiosaavn
-import artist
+from jiosaavndownloader.api_src import jiosaavn
+from jiosaavndownloader import artist
 
 import mutagen.mp4
 import imghdr

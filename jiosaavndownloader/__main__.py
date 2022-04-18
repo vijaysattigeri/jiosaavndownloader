@@ -1,5 +1,5 @@
 
-import downloader
+from jiosaavndownloader import downloader
 import argparse
 import os
 
@@ -22,7 +22,7 @@ class ReadFromFile(argparse.Action):
             parser.parse_args(f.read().split(), namespace)
 
 
-if __name__ == '__main__':
+def main():
     arg_parser = argparse.ArgumentParser(description = 'Downloads music from JioSaavn', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     arg_parser.add_argument('-u', '--url', type=str, metavar='', action="append", help='The URL of the song, album or playlist')
     arg_parser.add_argument('-f', '--file', type=open, action=ReadFromFile, metavar='', help='The file containing options')
@@ -35,3 +35,8 @@ if __name__ == '__main__':
     
     d_obj = downloader.Downloader(args.url, args.output_dir)
     d_obj.downloadMusic()
+
+
+if __name__ == '__main__':
+    main()
+

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from setuptools import setup, find_packages
 
 
@@ -20,6 +22,10 @@ setup(
         'mutagen',
         'tqdm'
     ],
+    entry_points = {
+        'console_scripts': [
+            'jiod = jiosaavndownloader.__main__:main']
+    },
     license='Mozilla Public License Version 2.0',
     classifiers=[
         "Programming Language :: Python :: 3",

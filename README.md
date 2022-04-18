@@ -4,42 +4,64 @@ Downloads high quality songs from JioSaavn
 ## Description
 The application downloads the songs(single, album & playlist) from JioSaavn and adds all the necessary metadata to the downloaded media. This application uses the unofficial API [JioSaavnAPI](https://github.com/cyberboysumanjay/JioSaavnAPI) written by [Sumanjay](https://github.com/cyberboysumanjay)
 
-The media will be downloaded and placed in a directory called `MusicLibrary` which will be created in present working directory.
+The media will be downloaded and placed in the specified(through -o) directory.
 
 ## Installation
-1. Clone the repository
+1. Clone the repository (for latest source) OR download the release source
 
 > git clone https://github.com/vijaysattigeri/jiosaavndownloader
 
 2. [Optional] Create a python virtual environment and activate it
 
-3. Install requirements OR install local package through pip
+3. Install local package through pip
+
+> pip3 install .
+
+OR
+Install requirements manually. (If you don't want to install this package by pip)
 
 > pip3 install -r requirements.txt
 
-    OR 
-
-> pip3 install .
 
 4. You're all set.
 
 ## Usage
+1. If installed through pip
 
-    python jiosaavndownloader -h
-    usage: jiosaavndownloader [-h] [-u] [-f] [-o ]
+        jiod -h
+        usage: jiod [-h] [-u] [-f] [-o ]
 
-    Downloads music from JioSaavn
+        Downloads music from JioSaavn
 
-    optional arguments:
-        -h, --help            show this help message and exit
-        -u , --url            The URL of the song, album, playlist or artist(default: None)
-        -f , --file           The file containing options (default: None)
-        -o [], --output_dir []
-                              The destination directory to store the downloaded media (default: MusicLibrary)
+        optional arguments:
+            -h, --help            show this help message and exit
+            -u , --url            The URL of the song, album, playlist or artist(default: None)
+            -f , --file           The file containing options (default: None)
+            -o [], --output_dir []
+                                The destination directory to store the downloaded media (default: MusicLibrary)
 
-      -------------------------------------------------------------------------------------
-      Ex:
-      > python jiosaavndownloader -u https://www.jiosaavn.com/song/feel-nothing/GTATcjpKUGY
+        -------------------------------------------------------------------------------------
+        Ex:
+        > jiod -u https://www.jiosaavn.com/song/feel-nothing/GTATcjpKUGY
+
+
+2. If not installed and in source code directory
+
+        python jiosaavndownloader -h
+        usage: jiosaavndownloader [-h] [-u] [-f] [-o ]
+
+        Downloads music from JioSaavn
+
+        optional arguments:
+            -h, --help            show this help message and exit
+            -u , --url            The URL of the song, album, playlist or artist(default: None)
+            -f , --file           The file containing options (default: None)
+            -o [], --output_dir []
+                                The destination directory to store the downloaded media (default: MusicLibrary)
+
+        -------------------------------------------------------------------------------------
+        Ex:
+        > python jiosaavndownloader -u https://www.jiosaavn.com/song/feel-nothing/GTATcjpKUGY
       
       
 ## License

@@ -1,6 +1,5 @@
-from api_src import endpoints
-from api_src import jiosaavn
-from api_src import helper
+from jiosaavndownloader.api_src import endpoints, jiosaavn, helper
+
 import json
 import requests
 
