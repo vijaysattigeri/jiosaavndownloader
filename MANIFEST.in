@@ -2,5 +2,6 @@ include README.md
 include requirements.txt
 include LICENSE
 include AUTHORS.md
+include jiosaavndownloader/version.json
 include jiosaavndownloader/api_src/LICENSE
 include jiosaavndownloader/api_src/README.md

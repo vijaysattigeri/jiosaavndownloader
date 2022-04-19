@@ -28,13 +28,14 @@ Install requirements manually. (If you don't want to install this package by pip
 ## Usage
 1. If installed through pip
 
-        jiod -h
-        usage: jiod [-h] [-u] [-f] [-o ]
+        jiosaavndownloader -h
+        usage: jiosaavndownloader [-h] [-v] [-u] [-f] [-o ]
 
         Downloads music from JioSaavn
 
         optional arguments:
             -h, --help            show this help message and exit
+            -v, --version         show program's version number and exit
             -u , --url            The URL of the song, album, playlist or artist(default: None)
             -f , --file           The file containing options (default: None)
             -o [], --output_dir []
@@ -42,18 +43,19 @@ Install requirements manually. (If you don't want to install this package by pip
 
         -------------------------------------------------------------------------------------
         Ex:
-        > jiod -u https://www.jiosaavn.com/song/feel-nothing/GTATcjpKUGY
+        > jiosaavndownloader -u https://www.jiosaavn.com/song/feel-nothing/GTATcjpKUGY
 
 
 2. If not installed and in source code directory
 
-        python jiosaavndownloader -h
-        usage: jiosaavndownloader [-h] [-u] [-f] [-o ]
+        python -m jiosaavndownloader -h
+        usage: __main__.py [-h] [-v] [-u] [-f] [-o ]
 
         Downloads music from JioSaavn
 
         optional arguments:
             -h, --help            show this help message and exit
+            -v, --version         show program's version number and exit
             -u , --url            The URL of the song, album, playlist or artist(default: None)
             -f , --file           The file containing options (default: None)
             -o [], --output_dir []
@@ -61,7 +63,7 @@ Install requirements manually. (If you don't want to install this package by pip
 
         -------------------------------------------------------------------------------------
         Ex:
-        > python jiosaavndownloader -u https://www.jiosaavn.com/song/feel-nothing/GTATcjpKUGY
+        > python -m jiosaavndownloader -u https://www.jiosaavn.com/song/feel-nothing/GTATcjpKUGY
       
       
 ## License
