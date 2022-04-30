@@ -80,7 +80,7 @@ class Downloader:
         img_fh.close()
         # Detect actual extension
         img_file_name = os.path.join(out_sub_dir_pl_alb, f'Cover.{imghdr.what(img_file_name_tmp)}')
-        os.rename(img_file_name_tmp, img_file_name)
+        os.replace(img_file_name_tmp, img_file_name)
         i = 1
         for song_obj in a_alb_obj["songs"]:
             self.downloadAndAddMetadata(out_sub_dir_pl_alb, song_obj, i, len(a_alb_obj["songs"]))
@@ -169,7 +169,7 @@ class Downloader:
         act_img_ext = imghdr.what(img_file_name_tmp)
         if act_img_ext:
             img_file_name = os.path.join(out_dir, f'SongCover.{act_img_ext}')
-            os.rename(img_file_name_tmp, img_file_name)
+            os.replace(img_file_name_tmp, img_file_name)
             cover_format = mutagen.mp4.MP4Cover.FORMAT_PNG
             if act_img_ext.casefold() == "jpeg".casefold() or act_img_ext.casefold() == "jpg":
                 cover_format = mutagen.mp4.MP4Cover.FORMAT_JPEG
