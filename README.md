@@ -29,7 +29,7 @@ Install requirements manually. (If you don't want to install this package by pip
 1. If installed through pip
 
         jiosaavndownloader -h
-        usage: jiosaavndownloader [-h] [-v] [-u] [-f] [-o ]
+        usage: jiosaavndownloader [-h] [-v] -u  [-f] [-o ] [-a ]
 
         Downloads music from JioSaavn
 
@@ -40,6 +40,7 @@ Install requirements manually. (If you don't want to install this package by pip
             -f , --file           The file containing options (default: None)
             -o [], --output_dir []
                                 The destination directory to store the downloaded media (default: MusicLibrary)
+            -a [], --append []  Appends/updates the music library instead of duplicate downloading (default: False)
 
         -------------------------------------------------------------------------------------
         Ex:
@@ -49,7 +50,7 @@ Install requirements manually. (If you don't want to install this package by pip
 2. If not installed and in source code directory
 
         python -m jiosaavndownloader -h
-        usage: __main__.py [-h] [-v] [-u] [-f] [-o ]
+        usage: __main__.py [-h] [-v] -u  [-f] [-o ] [-a ]
 
         Downloads music from JioSaavn
 
@@ -60,6 +61,7 @@ Install requirements manually. (If you don't want to install this package by pip
             -f , --file           The file containing options (default: None)
             -o [], --output_dir []
                                 The destination directory to store the downloaded media (default: MusicLibrary)
+            -a [], --append []  Appends/updates the music library instead of duplicate downloading (default: False)
 
         -------------------------------------------------------------------------------------
         Ex:

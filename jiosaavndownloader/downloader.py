@@ -1,3 +1,4 @@
+import code
 from jiosaavndownloader.api_src import jiosaavn
 from jiosaavndownloader import artist
 
@@ -13,10 +14,13 @@ import tqdm
 
 
 class Downloader:
-    def __init__(self, a_url_list, a_out_dir):
+    def __init__(self, a_url_list, a_out_dir, a_is_append):
         self.url_list = a_url_list
         self.json_data = None
-        self.output_dir = a_out_dir
+        self.options = {} 
+        self.options["output_dir"] = a_out_dir
+        self.options["append"] = a_is_append
+        
 
 
     def downloadMusic(self):
@@ -28,21 +32,21 @@ class Downloader:
             if '/song/' in each_url:
                 song_id = jiosaavn.get_song_id( each_url )
                 self.json_data = jiosaavn.get_song( song_id,lyrics )
-                self.downloadAndAddMetadata( self.output_dir, self.json_data, 1, 1 )
+                self.downloadAndAddMetadata( self.options["output_dir"], self.json_data, 1, 1 )
 
             elif '/album/' in each_url:
                 alb_id = jiosaavn.get_album_id( each_url )
                 self.json_data = jiosaavn.get_album( alb_id, lyrics )
-                self.downloadAlbumOrPlaylist(self.output_dir, self.json_data, True)
+                self.downloadAlbumOrPlaylist(self.options["output_dir"], self.json_data, True)
 
             elif '/playlist/' in each_url or '/featured/' in each_url:
                 playlist_id = jiosaavn.get_playlist_id( each_url )
                 self.json_data = jiosaavn.get_playlist( playlist_id, lyrics )
-                self.downloadAlbumOrPlaylist(self.output_dir, self.json_data, False)
+                self.downloadAlbumOrPlaylist(self.options["output_dir"], self.json_data, False)
 
             elif '/artist/' in each_url:
                 self.json_data = artist.get_artist_data( each_url, True )
-                artist_dir = os.path.join(self.output_dir, self.getLegalPathString( self.json_data["name"]) )
+                artist_dir = os.path.join(self.options["output_dir"], self.getLegalPathString( self.json_data["name"]) )
 
                 # Download Top Songs of artist
                 top_song_dir = os.path.join(artist_dir, "Top Songs")
@@ -142,8 +146,13 @@ class Downloader:
         audio_file = f'{track_prefix}. {song_obj["song"]}.m4a'
         audio_file = os.path.join(out_dir, self.getLegalPathString(audio_file) )
 
-        # Get unique name if the name already exists
-        audio_file = self.getUniqueFileName(audio_file)
+        if self.options["append"] and os.path.exists(audio_file):
+            print(f"File '{audio_file}' already exists. Skipping download!", flush=True)
+            return
+        else:
+            # Get unique name if the name already exists
+            audio_file = self.getUniqueFileName(audio_file)
+
         print(f"Downloading file '{audio_file}' ...", flush=True)
         if self.downloadWithProgress(audio_file, song_obj["media_url"]):
             print(f"File '{audio_file}' downloaded successfully", flush=True)
