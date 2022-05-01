@@ -13,7 +13,7 @@ The media will be downloaded and placed in the specified(through -o) directory.
 
 2. [Optional] Create a python virtual environment and activate it
 
-3. Install local package through pip
+3. Install local package through pip: Go to downloaded source directory and issue following command
 
 > pip3 install .
 
