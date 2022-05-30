@@ -36,12 +36,14 @@ class ReadFromFile(argparse.Action):
 def main():
     arg_parser = argparse.ArgumentParser(description = 'Downloads music from JioSaavn', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     arg_parser.add_argument('-v', '--version', action='version', version='%(prog)s {version}'.format(version=__version__))
-    arg_parser.add_argument('-u', '--url', type=str, metavar='', action="append", help='The URL of the song, album or playlist', required=True)
+    arg_parser.add_argument('-u', '--url', type=str, metavar='', action="append", help='The URL of the song, album or playlist')
     arg_parser.add_argument('-f', '--file', type=open, action=ReadFromFile, metavar='', help='The file containing options')
     arg_parser.add_argument('-o', '--output_dir', type=str, metavar='', nargs='?', default="MusicLibrary", const="MusicLibrary", help='The destination directory to store the downloaded media')
     arg_parser.add_argument('-a', '--append', type=str_to_bool, metavar='', nargs='?', default=False, const=True, help='Appends/updates the music library instead of duplicate downloading')
     
     args = arg_parser.parse_args()
+    if not (args.url):
+        arg_parser.error('No URLs provided')
     
     # Create output directory 
     create_out_dir(args.output_dir)
